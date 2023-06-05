@@ -36,15 +36,22 @@ def save_message(username, message):
         "username": username,
         "message": message
     }
-    with open('storage/data.json', 'r+') as file:
+    file_path = 'storage/data.json'
+
+    # Прочитати вміст файлу
+    with open(file_path, 'r') as file:
         try:
             messages = json.load(file)
         except json.JSONDecodeError:
             messages = {}
-        messages[timestamp] = data
-        file.seek(0)
+
+    # Додати нове повідомлення
+    messages[timestamp] = data
+
+    # Записати весь вміст у файл
+    with open(file_path, 'w') as file:
         json.dump(messages, file, indent=2)
-        file.truncate()
+
 
 # Відправка повідомлення на Socket сервер
 def send_to_socket_server(username, message):
@@ -81,9 +88,21 @@ def socket_server():
 def save_message_from_socket_server(message):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")
     data = json.loads(message)
-    with open('storage/data.json', 'a') as file:
-        json.dump({timestamp: data}, file)
-        file.write('\n')
+    file_path = 'storage/data.json'
+
+    # Прочитати вміст файлу
+    with open(file_path, 'r') as file:
+        try:
+            messages = json.load(file)
+        except json.JSONDecodeError:
+            messages = {}
+
+    # Додати нове повідомлення
+    messages[timestamp] = data
+
+    # Записати весь вміст у файл
+    with open(file_path, 'w') as file:
+        json.dump(messages, file, indent=2)
 
 
 if __name__ == '__main__':
